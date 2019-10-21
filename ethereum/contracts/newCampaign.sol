@@ -18,17 +18,6 @@ contract CampaignFactory {
 
 contract Campaign {
     
-    struct Request {
-        string description;
-        uint value;
-        address recipient;
-        bool complete;
-        uint approvalCounts;
-        mapping(address => bool) approvals;
-    }
-    
-    Request[] public requests;
-    
     address public manager;
     
     uint public minumumContribution;
@@ -49,11 +38,6 @@ contract Campaign {
         _;
     }
     
-    modifier isDonated {
-        require(approvers[msg.sender]);
-        _;
-    }
-    
     function Campaign(uint minumum,address creator) public {
         manager = creator;
         minumumContribution = minumum;
@@ -63,43 +47,15 @@ contract Campaign {
         if(approvers[msg.sender]){
             approvers[msg.sender] = true;
             budget += msg.value;
-        }else {
+        } else {
             approvers[msg.sender] = true;
             budget += msg.value;
             approversCount++;
         }
     }
     
-    function createRequest(string description,uint value,address recipient) isManager public {
-        Request memory newRequest = Request({
-            description : description,
-            value : value,
-            recipient : recipient,
-            complete : false,
-            approvalCounts : 0
-        });
-        
-        requests.push(newRequest);
-    }
-    
-    function approveRequest(uint index) isDonated public {
-        Request storage request = requests[index];
-        
-        require(!request.approvals[msg.sender]);
-        request.approvals[msg.sender] = true;
-        
-        request.approvalCounts++;
-    }
-    
-    
-    function finalizeRequest(uint index) isManager public payable  {
-        Request storage request = requests[index];
-        
-        require(!request.complete);
-        require(request.approvalCounts > (approversCount / 2)  );
-        
-        request.recipient.transfer(request.value);
-        request.complete = true;
+    function collectMoney() isManager public payable {
+        manager.transfer(this.balance);
     }
     
     //manager , balance ,minumumContribution , approversCount

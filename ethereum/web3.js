@@ -1,16 +1,15 @@
-import Web3 from 'web3';
-
+import Web3 from "web3";
 let web3;
 
-if (typeof window !== 'undefined' && window.web3 !== 'undefined') {
-    //we are in browser and metamask is running 
+if(typeof window !== 'undefined' && typeof window.web3 !== 'undefined'){
     web3 = new Web3(window.web3.currentProvider);
-} else{
-    //we are on browser or user is not running metamask
+}
+else{
     const provider = new Web3.providers.HttpProvider(
-        'url infura and rinby'
-        );
-        web3 = new Web3(provider);
+        'https://rinkeby.infura.io/YfN9MatBIrqHOPqfZz5l'
+    );
+
+    web3 = new Web3(provider);
 }
 
 export default web3;
